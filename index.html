@@ -523,9 +523,25 @@
     $("#btnC").addEventListener("click",()=>{ state.units="C"; $("#btnC").classList.add("active"); $("#btnF").classList.remove("active"); render(); });
     $("#btnF").addEventListener("click",()=>{ state.units="F"; $("#btnF").classList.add("active"); $("#btnC").classList.remove("active"); render(); });
 
-    // ---------- Init ----------
-    (async function init(){ await loadByQuery("Songdo, Incheon"); })();
-  </script>
+    // ---------- Init ----------
+    (async function init(){
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            loadByCoords(latitude, longitude, "내 위치");
+          },
+          (err) => {
+            // 위치 권한 거부 또는 오류 시 기본값(인천 송도) 로드
+            loadByCoords(37.382, 126.640, "인천 송도");
+          },
+          { enableHighAccuracy: true, maximumAge: 300000, timeout: 10000 }
+        );
+      } else {
+        // 브라우저가 위치 추적을 지원하지 않을 경우 기본값 로드
+        loadByCoords(37.382, 126.640, "인천 송도");
+      }
+    })();
+  </script>
 </body>
 </html>
-
